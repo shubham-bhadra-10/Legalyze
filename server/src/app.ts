@@ -56,10 +56,6 @@ app.use(
 
       // Cookie expiration time (1 day in milliseconds)
       maxAge: 1000 * 60 * 60 * 24,
-
-      // Additional recommended security settings you might want to add:
-      // httpOnly: true, // Prevents client-side JS from accessing the cookie
-      // domain: process.env.COOKIE_DOMAIN // If you need cross-subdomain cookies
     },
   })
 );
