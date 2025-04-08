@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -14,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { Icons } from './icons';
 
 function googleSignIn(): Promise<void> {
   return new Promise((resolve) => {
@@ -74,6 +74,7 @@ export function UserButton() {
                 href='/dashboard'
                 className='w-full px-3 py-2 hover:bg-gray-100 rounded-sm text-sm'
               >
+                <Icons.dashboard className='mr-2 h-4 w-4' />
                 Dashboard
               </Link>
             </DropdownMenuItem>
@@ -82,6 +83,7 @@ export function UserButton() {
                 href='/dashboard/settings'
                 className='w-full px-3 py-2 hover:bg-gray-100 rounded-sm text-sm'
               >
+                <Icons.settings className='mr-2 h-4 w-4' />
                 Settings
               </Link>
             </DropdownMenuItem>
@@ -92,6 +94,7 @@ export function UserButton() {
               onSelect={handleLogout}
               className='w-full px-3 py-2 hover:bg-gray-100 rounded-sm text-sm text-red-600 cursor-pointer'
             >
+              <Icons.logout className='mr-2 h-4 w-4 text-red-600' />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
