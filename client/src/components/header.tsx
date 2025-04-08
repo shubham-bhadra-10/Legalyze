@@ -13,7 +13,7 @@ const navItems = [
 
 function googleSignIn(): Promise<void> {
   return new Promise((resolve) => {
-    window.location.href = 'http://localhost:8080/auth/google';
+    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL!;
     resolve();
   });
 }
