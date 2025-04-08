@@ -26,9 +26,9 @@ passport.use(
         if (!user) {
           user = await User.create({
             googleId: profile.id,
-            email: profile.emails?.[0]?.value || null,
+            email: profile.emails![0].value,
             displayName: profile.displayName,
-            profilePicture: profile.photos?.[0]?.value || null,
+            profilePicture: profile.photos![0]?.value,
             // Add any additional fields you want to save
           });
         }
