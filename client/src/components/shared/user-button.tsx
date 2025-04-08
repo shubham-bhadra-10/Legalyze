@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Icons } from './icons';
+import { logout } from '@/lib/api';
 
 function googleSignIn(): Promise<void> {
   return new Promise((resolve) => {
@@ -27,12 +28,10 @@ export function UserButton() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`);
-      router.refresh(); // Refresh session-based UI
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    await logout();
+    // router.refresh();
+    // router.push('/');
+    window.location.reload();
   };
 
   return (
@@ -91,7 +90,7 @@ export function UserButton() {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onSelect={handleLogout}
+              onClick={handleLogout}
               className='w-full px-3 py-2 hover:bg-gray-100 rounded-sm text-sm text-red-600 cursor-pointer'
             >
               <Icons.logout className='mr-2 h-4 w-4 text-red-600' />
