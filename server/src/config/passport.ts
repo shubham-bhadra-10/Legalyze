@@ -28,7 +28,7 @@ passport.use(
             googleId: profile.id,
             email: profile.emails![0].value,
             displayName: profile.displayName,
-            profilePicture: profile.photos![0]?.value,
+            profileImage: profile.photos![0].value,
             // Add any additional fields you want to save
           });
         }
