@@ -12,9 +12,10 @@ export const useCurrentUser = () => {
       try {
         const response = await api.get('/auth/current-user');
         return response.data;
-      } catch (error) {
-        console.error('Error fetching current user:', error);
-        return null;
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          return null; // User is not logged in
+        }
       }
     },
   });
