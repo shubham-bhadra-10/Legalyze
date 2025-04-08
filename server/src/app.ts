@@ -22,7 +22,12 @@ mongoose
   .catch((err) => {
     console.error('❌ Error connecting to MongoDB:', err);
   });
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true, // Allow credentials (cookies) to be sent
+  })
+);
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
