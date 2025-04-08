@@ -22,7 +22,12 @@ mongoose
   .catch((err) => {
     console.error('❌ Error connecting to MongoDB:', err);
   });
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true, // Allow credentials (cookies) to be sent
+  })
+);
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
@@ -31,7 +36,7 @@ app.use(morgan('dev'));
 app.use(
   session({
     // Secret used to sign the session ID cookie (should be a long, random string in production)
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.GOOGLE_CLIENT_SECRET!,
 
     // Don't save the session if it wasn't modified during the request
     resave: false,
