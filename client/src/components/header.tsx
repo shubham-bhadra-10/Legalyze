@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from './ui/button';
+import { UserButton } from './shared/user-button';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard' },
@@ -11,16 +12,8 @@ const navItems = [
   { name: 'Privacy Policy', href: '/privacy' },
 ];
 
-function googleSignIn(): Promise<void> {
-  return new Promise((resolve) => {
-    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL!;
-    resolve();
-  });
-}
-
 export function Header() {
   const pathName = usePathname();
-  const user = true;
   return (
     <header className='sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm px-4'>
       <div className='mx-auto flex h-16 max-w-7xl items-center justify-between'>
@@ -45,14 +38,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div>
-          <Button
-            onClick={googleSignIn}
-            className='bg-gray-900 text-white hover:bg-gray-800 rounded-md px-4 py-2'
-          >
-            Get started
-          </Button>
-        </div>
+        <UserButton />
       </div>
     </header>
   );
