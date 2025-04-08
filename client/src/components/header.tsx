@@ -1,4 +1,8 @@
+'use client';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { use } from 'react';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard' },
@@ -7,6 +11,7 @@ const navItems = [
 ];
 
 export function Header() {
+  const pathName = usePathname();
   return (
     <header className='sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm px-4'>
       <div className='mx-auto flex h-16 max-w-7xl items-center justify-between'>
@@ -18,7 +23,12 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className='text-sm font-medium text-gray-600 hover:text-gray-900'
+              className={cn(
+                'transition-colors hover:text-foreground/80',
+                pathName === item.href
+                  ? 'text-foreground'
+                  : 'text-foreground/60'
+              )}
             >
               {item.name}
             </Link>
