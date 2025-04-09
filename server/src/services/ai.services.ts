@@ -1,9 +1,11 @@
 import redis from '../controllers/redis';
 import { getDocument } from 'pdfjs-dist';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { model } from 'mongoose';
 
 const AI_MODEL = 'gemini-pro';
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY!);
+const aiModel = genAI.getGenerativeModel({ model: AI_MODEL });
 
 export const extractTextFromPdf = async (fileKey: string) => {
   try {
@@ -44,11 +46,10 @@ export const extractTextFromPdf = async (fileKey: string) => {
 export const detectContractType = async (
   contractText: string
 ): Promise<string> => {
-  const model = genAI.getGenerativeModel({ model: AI_MODEL });
   const prompt = `Analyze the following contract text and deteremine the type of contract it is. Provide only type as a single string (e.g. "Employment", "Non-Disclosure Agreement", "Sales","Lease",etc.). Do not include any additional explaination or text.
   
   Contract Text: ${contractText.substring(0, 2000)}`;
-  const result = await model.generateContent(prompt);
+  const result = await aiModel.generateContent(prompt);
   const response = await result.response;
   return response.text().trim();
 };
@@ -97,6 +98,9 @@ specificClauses: "Summary of clauses specific to the contract type"
 
  Contract text: ${contractText}
  `;
+  const results = await aiModel.generateContent(prompt);
+  const response = results.response;
+  return response.text();
 };
 
 // Ensure that all text in the JSON object is in same language as the orginal contract (${language}).
