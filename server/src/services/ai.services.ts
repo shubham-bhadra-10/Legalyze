@@ -54,7 +54,7 @@ export const detectContractType = async (
   return response.text().trim();
 };
 
-export const analyzeContract = async (
+export const analyzeContractWithAI = async (
   contractText: string,
   contractType: string
 ) => {
