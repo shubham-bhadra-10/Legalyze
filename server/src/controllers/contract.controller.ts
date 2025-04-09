@@ -4,7 +4,10 @@ import { Request, Response } from 'express';
 import { IUser } from '../models/user.model';
 import '../types/express'; // Import the extended Request type for user property
 import redis from './redis';
-import { extractTextFromPdf } from '../services/ai.services';
+import {
+  detectContractType,
+  extractTextFromPdf,
+} from '../services/ai.services';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -16,6 +19,8 @@ const upload = multer({
     }
   },
 }).single('contract');
+
+export const uploadMiddleware = upload;
 
 export const detectAndConfirmContractType = async (
   req: Request,
@@ -30,7 +35,9 @@ export const detectAndConfirmContractType = async (
     await redis.set(fileKey, req.file.buffer);
     await redis.expire(fileKey, 60 * 60); // Set expiration to 1 hour
     const pdfText = await extractTextFromPdf(fileKey);
-    return res.status(200).json({ text: pdfText });
+    const detectedType = await detectContractType(pdfText);
+    await redis.del(fileKey); // Clean up the file from Redis after processing
+    return res.json({ detectedType });
   } catch (error) {
     return res.status(500).json({
       message: 'Error processing PDF',
