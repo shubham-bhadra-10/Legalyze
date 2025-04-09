@@ -11,6 +11,7 @@ import MongoStore from 'connect-mongo';
 import './config/passport';
 //routes
 import authRoute from './routes/auth';
+import contractRoute from './routes/contracts';
 
 const app = express();
 // console.log(process.env.MONGODB_URI);
@@ -70,6 +71,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoute);
+app.use('/contracts', authRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
