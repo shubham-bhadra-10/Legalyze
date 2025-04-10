@@ -11,6 +11,8 @@ import { useContractStore } from '@/store/zustand';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { AnimatePresence, motion } from 'framer-motion';
+import { get } from 'http';
 
 interface IUploadModalProps {
   isOpen: boolean;
@@ -119,4 +121,24 @@ export default function UploadModel({
     setError(null);
     setStep('upload');
   };
+  const renderContent = () => {
+    switch (step) {
+      case 'upload': {
+        return (
+          <AnimatePresence>
+            <motion.div>
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        );
+      }
+    }
+  };
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogTrigger>{renderContent()}</DialogTrigger>
+    </Dialog>
+  );
 }
