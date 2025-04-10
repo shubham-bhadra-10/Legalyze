@@ -172,7 +172,7 @@ export default function UploadModel({
                     variant='ghost'
                     size='icon'
                     className='text-red-500 hover:text-red-900 transition-colors duration-150'
-                    // onClick={handleFileRemove} // Add your remove logic here
+                    onClick={() => setFile([])}
                   >
                     <Trash className='w-5 h-5' />
                   </Button>
