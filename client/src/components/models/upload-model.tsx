@@ -4,7 +4,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { api } from '@/lib/api';
 import { useContractStore } from '@/store/zustand';
@@ -12,18 +11,18 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AnimatePresence, motion } from 'framer-motion';
-import { get } from 'http';
+import { FileText } from 'lucide-react';
 
 interface IUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUnploadComplete: () => void;
+  onUploadComplete: () => void;
 }
 
 export default function UploadModel({
   isOpen,
   onClose,
-  onUnploadComplete,
+  onUploadComplete,
 }: IUploadModalProps) {
   const { setAnalysisResults } = useContractStore();
   const [detectedType, setDetectedType] = useState<string | null>(null);
@@ -59,6 +58,7 @@ export default function UploadModel({
       setStep('upload');
     },
   });
+
   const { mutate: uploadFile, isPending: isProcessing } = useMutation({
     mutationFn: async ({
       file,
@@ -78,7 +78,7 @@ export default function UploadModel({
     },
     onSuccess: (data) => {
       setAnalysisResults(data);
-      onUnploadComplete();
+      onUploadComplete();
     },
     onError: (error: any) => {
       console.error(error);
@@ -86,6 +86,7 @@ export default function UploadModel({
       setStep('upload');
     },
   });
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles);
@@ -95,6 +96,7 @@ export default function UploadModel({
       setError('Please select a valid file');
     }
   }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -102,18 +104,21 @@ export default function UploadModel({
     },
     maxFiles: 1,
   });
+
   const handleFileUpload = () => {
     if (file.length > 0) {
       setStep('detecting');
       detectedContractType({ file: file[0] });
     }
   };
+
   const handleAnalyzeContract = () => {
     if (file.length > 0 && detectedType) {
       setStep('analyzing');
       uploadFile({ file: file[0], contractType: detectedType });
     }
   };
+
   const handleClose = () => {
     onClose();
     setFile([]);
@@ -121,24 +126,58 @@ export default function UploadModel({
     setError(null);
     setStep('upload');
   };
+
   const renderContent = () => {
     switch (step) {
       case 'upload': {
         return (
           <AnimatePresence>
             <motion.div>
-              <div {...getRootProps()}>
+              <div
+                {...getRootProps()}
+                className='border border-dashed p-6 rounded-lg text-center cursor-pointer'
+              >
                 <input {...getInputProps()} />
+                <motion.div>
+                  <FileText className='mx-auto h-12 w-12 text-blue-900' />
+                </motion.div>
+                {isDragActive ? (
+                  <p>Drop the file here...</p>
+                ) : (
+                  <p>Drag & drop a PDF file here, or click to select one.</p>
+                )}
               </div>
+              {file.length > 0 && (
+                <div className='mt-4 text-black'>
+                  <span>
+                    {file[0].name}
+                    {' - '}
+                    <span className='text-sm text-black'>
+                      ({file[0].size} bytes)
+                    </span>
+                  </span>
+                </div>
+              )}
+              {error && <p className='text-red-500 mt-2'>{error}</p>}
             </motion.div>
           </AnimatePresence>
         );
       }
+      // Add other steps (detecting, confirm, etc.) as needed
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogTrigger>{renderContent()}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upload Contract</DialogTitle>
+          <DialogDescription>
+            Please upload a PDF contract file to begin analysis.
+          </DialogDescription>
+        </DialogHeader>
+        {renderContent()}
+      </DialogContent>
     </Dialog>
   );
 }
