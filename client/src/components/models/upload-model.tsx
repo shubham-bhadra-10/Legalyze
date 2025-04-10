@@ -50,6 +50,11 @@ export default function UploadModel({
       setDetectedType(data);
       setStep('confirm');
     },
+    onError: (error: any) => {
+      console.error(error);
+      setError('Failed to detect contract type. Please try again.');
+      setStep('upload');
+    },
   });
   const { mutate: uploadFile, isPending: isProcessing } = useMutation({
     mutationFn: async ({ file }: { file: File }) => {
@@ -65,6 +70,11 @@ export default function UploadModel({
     onSuccess: (data) => {
       setAnalysisResults(data);
       onUnploadComplete();
+    },
+    onError: (error: any) => {
+      console.error(error);
+      setError('Failed to analyze contract. Please try again.');
+      setStep('upload');
     },
   });
 }
