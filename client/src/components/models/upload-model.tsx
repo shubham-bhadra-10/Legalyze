@@ -9,7 +9,8 @@ import {
 import { api } from '@/lib/api';
 import { useContractStore } from '@/store/zustand';
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 interface IUploadModalProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export default function UploadModel({
     'upload' | 'detecting' | 'confirm' | 'analyzing' | 'done'
   >('upload');
 
-  const {} = useMutation({
+  const { mutate: detectedContractType } = useMutation({
     mutationFn: async ({ file }: { file: File }) => {
       const formData = new FormData();
       formData.append('contract', file);
@@ -57,7 +58,13 @@ export default function UploadModel({
     },
   });
   const { mutate: uploadFile, isPending: isProcessing } = useMutation({
-    mutationFn: async ({ file }: { file: File }) => {
+    mutationFn: async ({
+      file,
+      contractType,
+    }: {
+      file: File;
+      contractType: string;
+    }) => {
       const formData = new FormData();
       formData.append('contract', file);
       const response = await api.post('/contracts/analyze', formData, {
@@ -77,4 +84,39 @@ export default function UploadModel({
       setStep('upload');
     },
   });
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles);
+      setError(null);
+      setStep('upload');
+    } else {
+      setError('Please select a valid file');
+    }
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/pdf': ['.pdf'],
+    },
+    maxFiles: 1,
+  });
+  const handleFileUpload = () => {
+    if (file.length > 0) {
+      setStep('detecting');
+      detectedContractType({ file: file[0] });
+    }
+  };
+  const handleAnalyzeContract = () => {
+    if (file.length > 0 && detectedType) {
+      setStep('analyzing');
+      uploadFile({ file: file[0], contractType: detectedType });
+    }
+  };
+  const handleClose = () => {
+    onClose();
+    setFile([]);
+    setDetectedType(null);
+    setError(null);
+    setStep('upload');
+  };
 }
