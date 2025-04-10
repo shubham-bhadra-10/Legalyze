@@ -11,7 +11,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FileText } from 'lucide-react';
+import { FileText, Ghost, Trash } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface IUploadModalProps {
   isOpen: boolean;
@@ -132,33 +133,61 @@ export default function UploadModel({
       case 'upload': {
         return (
           <AnimatePresence>
-            <motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className='max-w-md mx-auto'
+            >
               <div
                 {...getRootProps()}
-                className='border border-dashed p-6 rounded-lg text-center cursor-pointer'
+                className='bg-white border-2 border-dashed border-blue-400 p-8 rounded-xl text-center cursor-pointer hover:bg-blue-50 transition-colors duration-200 shadow-sm'
               >
                 <input {...getInputProps()} />
-                <motion.div>
-                  <FileText className='mx-auto h-12 w-12 text-blue-900' />
+                <motion.div layout>
+                  <FileText className='mx-auto h-14 w-14 text-bg-[#1E2732] mb-2' />
                 </motion.div>
-                {isDragActive ? (
-                  <p>Drop the file here...</p>
-                ) : (
-                  <p>Drag & drop a PDF file here, or click to select one.</p>
-                )}
+                <p className='text-bg-[#1E2732] font-medium'>
+                  {isDragActive
+                    ? 'Drop the file here...'
+                    : 'Drag & drop a PDF file here, or click to select one.'}
+                </p>
               </div>
+
               {file.length > 0 && (
-                <div className='mt-4 text-black'>
-                  <span>
-                    {file[0].name}
-                    {' - '}
-                    <span className='text-sm text-black'>
-                      ({file[0].size} bytes)
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className='mt-4 bg-white border border-green-400 border-dashed text-green-900 p-4 rounded-lg shadow-sm flex items-center justify-between'
+                >
+                  <div>
+                    <span className='block font-semibold'>{file[0].name}</span>
+                    <span className='text-sm text-green-700'>
+                      ({(file[0].size / (1024 * 1024)).toFixed(2)} MB)
                     </span>
-                  </span>
-                </div>
+                  </div>
+
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='text-red-500 hover:text-red-900 transition-colors duration-150'
+                    // onClick={handleFileRemove} // Add your remove logic here
+                  >
+                    <Trash className='w-5 h-5' />
+                  </Button>
+                </motion.div>
               )}
-              {error && <p className='text-red-500 mt-2'>{error}</p>}
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className='text-red-500 mt-3 text-sm text-center'
+                >
+                  {error}
+                </motion.p>
+              )}
             </motion.div>
           </AnimatePresence>
         );
