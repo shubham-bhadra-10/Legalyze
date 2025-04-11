@@ -1,9 +1,8 @@
 import redis from '../controllers/redis';
 import { getDocument } from 'pdfjs-dist';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { model } from 'mongoose';
 
-const AI_MODEL = 'gemini-pro';
+const AI_MODEL = 'gemini-1.5-pro-latest';
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY!);
 const aiModel = genAI.getGenerativeModel({ model: AI_MODEL });
 
