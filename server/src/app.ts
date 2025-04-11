@@ -37,7 +37,7 @@ app.use(morgan('dev'));
 app.use(
   session({
     // Secret used to sign the session ID cookie (should be a long, random string in production)
-    secret: process.env.GOOGLE_CLIENT_SECRET!,
+    secret: process.env.SESSION_SECRET!,
 
     // Don't save the session if it wasn't modified during the request
     resave: false,
@@ -71,7 +71,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoute);
-app.use('/contracts', authRoute);
+app.use('/contracts', contractRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
