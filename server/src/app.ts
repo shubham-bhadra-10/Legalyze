@@ -37,7 +37,7 @@ app.use(morgan('dev'));
 app.use(
   session({
     // Secret used to sign the session ID cookie (should be a long, random string in production)
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.GOOGLE_CLIENT_SECRET!,
 
     // Don't save the session if it wasn't modified during the request
     resave: false,
