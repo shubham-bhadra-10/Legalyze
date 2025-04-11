@@ -11,7 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FileText, Ghost, Sparkles, Trash } from 'lucide-react';
+import { FileText, Ghost, Loader2, Sparkles, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface IUploadModalProps {
@@ -200,7 +200,70 @@ export default function UploadModel({
           </AnimatePresence>
         );
       }
-      // Add other steps (detecting, confirm, etc.) as needed
+      // Add
+      // other steps (detecting, confirm, etc.) as needed
+      case 'detecting': {
+        return (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className='flex flex-col items-center justify-center py-10 px-4 text-center'
+            >
+              <Loader2 className='w-16 h-16 animate-spin text-primary' />
+              <p className='mt-6 text-xl font-semibold text-blue-900 dark:text-black'>
+                Detecting contract type...
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        );
+      }
+
+      case 'confirm': {
+        return (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className='space-y-6 text-center px-6 py-10'
+            >
+              <div>
+                <p className='text-lg font-semibold text-blue-900 dark:text-black'>
+                  We have detected the contract type as:
+                  <span className='ml-2 px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-base'>
+                    {detectedType}
+                  </span>
+                </p>
+                <p className='mt-2 text-sm text-gray-800 dark:text-gray-400'>
+                  Please confirm if this is correct before proceeding with the
+                  analysis.
+                </p>
+              </div>
+              <div className='flex justify-center gap-4 flex-wrap'>
+                <Button onClick={handleAnalyzeContract} className='mt-4'>
+                  Yes, Analyze It
+                </Button>
+                <Button
+                  variant='outline'
+                  className='mt-4'
+                  onClick={() => setStep('upload')}
+                >
+                  No, Upload a Different File
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        );
+      }
+      case 'analyzing': {
+        return (
+          <AnimatePresence>
+            <motion.div>waiting</motion.div>
+          </AnimatePresence>
+        );
+      }
     }
   };
 
