@@ -11,7 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FileText, Ghost, Trash } from 'lucide-react';
+import { FileText, Ghost, Sparkles, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface IUploadModalProps {
@@ -47,6 +47,7 @@ export default function UploadModel({
           },
         }
       );
+      // console.log('Detected Type:', response.data.detectedType);
       return response.data.detectedType;
     },
     onSuccess: (data: string) => {
@@ -70,6 +71,7 @@ export default function UploadModel({
     }) => {
       const formData = new FormData();
       formData.append('contract', file);
+      formData.append('contractType', contractType);
       const response = await api.post('/contracts/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -177,6 +179,12 @@ export default function UploadModel({
                     <Trash className='w-5 h-5' />
                   </Button>
                 </motion.div>
+              )}
+              {file.length > 0 && !isProcessing && (
+                <Button className='mt-6 w-full' onClick={handleFileUpload}>
+                  <Sparkles className='mr-2 w-5 h-5 animate-pulse' />
+                  Analyze Contract with AI
+                </Button>
               )}
 
               {error && (
