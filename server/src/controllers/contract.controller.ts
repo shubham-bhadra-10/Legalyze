@@ -2,18 +2,16 @@ import multer from 'multer';
 import { Request, Response } from 'express';
 
 import { IUser } from '../models/user.model';
-import '../types/express'; // Import the extended Request type for user property
+// Import the extended Request type for user property
 import redis from './redis';
 import {
   analyzeContractWithAI,
   detectContractType,
   extractTextFromPdf,
 } from '../services/ai.services';
-import { aw } from '@upstash/redis/zmscore-hRk-rDLY';
 import ContractAnalysisSchema, {
   IContractAnalysis,
 } from '../models/contract.model';
-import { Part } from '@google/generative-ai';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
