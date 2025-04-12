@@ -103,7 +103,7 @@ specificClauses: "Summary of clauses specific to the contract type"
   // return response.text();
 
   let text = response.text();
-  // console.log('AI Response:', text);
+  console.log('AI Response:', text);
 
   text = text.replace(/```json\n?|\n?|n?```/g, '').trim();
   try {

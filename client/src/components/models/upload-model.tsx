@@ -5,6 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { CheckCircle } from 'lucide-react';
+
 import { api } from '@/lib/api';
 import { useContractStore } from '@/store/zustand';
 import { useMutation } from '@tanstack/react-query';
@@ -13,6 +15,8 @@ import { useDropzone } from 'react-dropzone';
 import { animate, AnimatePresence, motion } from 'framer-motion';
 import { Brain, FileText, Ghost, Loader2, Sparkles, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { useRouter } from 'next/dist/client/components/navigation';
 
 interface IUploadModalProps {
   isOpen: boolean;
@@ -26,6 +30,8 @@ export default function UploadModel({
   onUploadComplete,
 }: IUploadModalProps) {
   const { setAnalysisResults } = useContractStore();
+  const router = useRouter();
+
   const [detectedType, setDetectedType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File[]>([]);
@@ -52,6 +58,7 @@ export default function UploadModel({
     },
     onSuccess: (data: string) => {
       setDetectedType(data);
+
       setStep('confirm');
     },
     onError: (error: any) => {
@@ -77,10 +84,12 @@ export default function UploadModel({
           'Content-Type': 'multipart/form-data',
         },
       });
+      console.log('Analysis Results:', response.data);
       return response.data;
     },
     onSuccess: (data) => {
       setAnalysisResults(data);
+      setStep('done');
       onUploadComplete();
     },
     onError: (error: any) => {
@@ -310,6 +319,52 @@ export default function UploadModel({
                   animate={{ width: '100%' }}
                   transition={{ duration: 10, ease: 'linear' }}
                 />
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        );
+      }
+      case 'done': {
+        return (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
+              <Alert className='mt-6 border border-green-300 bg-green-50 text-green-800 shadow-sm flex items-start gap-3'>
+                <CheckCircle className='mt-1 size-5 text-green-600' />
+                <div>
+                  <AlertTitle className='text-lg font-semibold'>
+                    Analysis Completed
+                  </AlertTitle>
+                  <AlertDescription className='mt-1 text-sm'>
+                    Your contract has been successfully analyzed. You can now
+                    view the results.
+                  </AlertDescription>
+                </div>
+              </Alert>
+
+              <motion.div
+                className='mt-6 flex flex-col sm:flex-row sm:justify-center gap-3'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Button
+                  onClick={() => router.push('/dashboard/results')}
+                  className='w-full sm:w-auto'
+                >
+                  View Results
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={handleClose}
+                  className='w-full sm:w-auto border-gray-300 text-gray-700'
+                >
+                  Close
+                </Button>
               </motion.div>
             </motion.div>
           </AnimatePresence>
