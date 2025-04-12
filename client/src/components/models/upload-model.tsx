@@ -10,8 +10,8 @@ import { useContractStore } from '@/store/zustand';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { AnimatePresence, motion } from 'framer-motion';
-import { FileText, Ghost, Loader2, Sparkles, Trash } from 'lucide-react';
+import { animate, AnimatePresence, motion } from 'framer-motion';
+import { Brain, FileText, Ghost, Loader2, Sparkles, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface IUploadModalProps {
@@ -260,7 +260,58 @@ export default function UploadModel({
       case 'analyzing': {
         return (
           <AnimatePresence>
-            <motion.div>waiting</motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className='flex flex-col items-center justify-center py-12 px-4 text-center'
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 360],
+                }}
+                transition={{
+                  duration: 3,
+                  ease: 'easeInOut',
+                  repeat: Infinity,
+                }}
+              >
+                <Brain className='size-24 text-primary' />
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, scale: 1.2, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className='mt-6 text-xl font-semibold text-gray-800'
+              >
+                AI is analyzing your contract...
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className='mt-2 text-base text-gray-600'
+              >
+                This may take a few moments. Please do not close the window.
+              </motion.p>
+
+              <motion.div
+                className='w-64 h-2 bg-gray-200 rounded-full mt-6 overflow-hidden'
+                initial={{ width: 0 }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 10, ease: 'linear' }}
+              >
+                <motion.div
+                  className='h-full bg-primary'
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 10, ease: 'linear' }}
+                />
+              </motion.div>
+            </motion.div>
           </AnimatePresence>
         );
       }
