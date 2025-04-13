@@ -9,6 +9,8 @@ import {
 } from '../ui/card';
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import OverallScoreChart from './chart';
+import { Tabs } from '../ui/tabs';
+import { TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 
 interface IContractAnalysisResultsProps {
   anaysisResults: ContractAnalysis;
@@ -90,6 +92,34 @@ export default function ContractAnalysisResults({
           </div>
         </CardContent>
       </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className='mb-6'>
+        <TabsList className='grid w-full grid-cols-4 gap-2 rounded-md bg-gray-100 p-1 shadow-sm'>
+          <TabsTrigger
+            value='summary'
+            className='text-sm font-medium text-gray-700 transition-colors hover:text-black data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-black rounded-md py-2'
+          >
+            Summary
+          </TabsTrigger>
+          <TabsTrigger
+            value='risks'
+            className='text-sm font-medium text-gray-700 transition-colors hover:text-black data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-black rounded-md py-2'
+          >
+            Risks
+          </TabsTrigger>
+          <TabsTrigger
+            value='opportunities'
+            className='text-sm font-medium text-gray-700 transition-colors hover:text-black data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-black rounded-md py-2'
+          >
+            Opportunities
+          </TabsTrigger>
+          <TabsTrigger
+            value='details'
+            className='text-sm font-medium text-gray-700 transition-colors hover:text-black data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-black rounded-md py-2'
+          >
+            Details
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
