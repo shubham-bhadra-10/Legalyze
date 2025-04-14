@@ -7,7 +7,7 @@ export default function ContractResultsPage() {
   return (
     <ContractAnalysisResults
       contractId={'test'}
-      isActive={true}
+      isActive={false}
       anaysisResults={analysisResults}
     />
   );
