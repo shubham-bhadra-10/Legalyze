@@ -1,5 +1,5 @@
 import { ContractAnalysis } from '@/interfaces/contract.interface';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -14,7 +14,8 @@ import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '../ui/button';
-import { Accordion } from '@radix-ui/react-accordion';
+import { Accordion, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { AccordionContent } from '@radix-ui/react-accordion';
 
 interface IContractAnalysisResultsProps {
   anaysisResults: ContractAnalysis;
@@ -136,6 +137,20 @@ export default function ContractAnalysisResults({
     );
   };
 
+  const renderPremiumAccordion = (content: ReactNode) => {
+    if (!isActive) {
+      return content;
+    }
+    return (
+      <div className='relative'>
+        <div className='absolute inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center'>
+          <Button variant={'outline'}>Upgrade to Premium</Button>
+          <div className='opacity-50'>{content}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='flex justify-between items-center mb-6'>
@@ -225,8 +240,7 @@ export default function ContractAnalysisResults({
             </CardHeader>
             <CardContent>
               <p className='text-lg leading-relaxed'>
-                {/* {anaysisResults.summary} */}
-                This is a sample summary of the contract analysis results.
+                {anaysisResults.summary}
               </p>
             </CardContent>
           </Card>
@@ -238,32 +252,7 @@ export default function ContractAnalysisResults({
             </CardHeader>
             <CardContent>
               {renderRisksandOpportunities(
-                [
-                  {
-                    risk: 'Risk 1',
-                    explanation: 'Explanation of risk 1',
-                    severity: 'High',
-                    impact: 'High',
-                  },
-                  {
-                    risk: 'Risk 2',
-                    explanation: 'Explanation of risk 2',
-                    severity: 'Medium',
-                    impact: 'Medium',
-                  },
-                  {
-                    risk: 'Risk 3',
-                    explanation: 'Explanation of risk 3',
-                    severity: 'Low',
-                    impact: 'Low',
-                  },
-                  {
-                    risk: 'Risk 4',
-                    explanation: 'Explanation of risk 4',
-                    severity: 'High',
-                    impact: 'High',
-                  },
-                ],
+                anaysisResults.risks,
                 'risk'
               )}
               {!isActive && (
@@ -281,32 +270,7 @@ export default function ContractAnalysisResults({
             </CardHeader>
             <CardContent>
               {renderRisksandOpportunities(
-                [
-                  {
-                    risk: 'Risk 1',
-                    explanation: 'Explanation of risk 1',
-                    severity: 'High',
-                    impact: 'High',
-                  },
-                  {
-                    risk: 'Risk 2',
-                    explanation: 'Explanation of risk 2',
-                    severity: 'Medium',
-                    impact: 'Medium',
-                  },
-                  {
-                    risk: 'Risk 3',
-                    explanation: 'Explanation of risk 3',
-                    severity: 'Low',
-                    impact: 'Low',
-                  },
-                  {
-                    risk: 'Risk 4',
-                    explanation: 'Explanation of risk 4',
-                    severity: 'High',
-                    impact: 'High',
-                  },
-                ],
+                anaysisResults.opportunities,
                 'opportunity'
               )}
               {!isActive && (
@@ -324,16 +288,11 @@ export default function ContractAnalysisResults({
                 <CardHeader>Contract Details</CardHeader>
                 <CardContent>
                   <ul className='space-y-2'>
-                    {
-                      anaysisResults.keyClauses?.map((keyClause, index) => (
-                        <motion.li
-                          key={index}
-                          className='flex items-center'
-                        >
-                          {keyClause}
-                        </motion.li>
-                      ))
-                    }
+                    {anaysisResults.keyClauses?.map((keyClause, index) => (
+                      <motion.li key={index} className='flex items-center'>
+                        {keyClause}
+                      </motion.li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
@@ -345,35 +304,60 @@ export default function ContractAnalysisResults({
                   <ul className='space-y-2'>
                     {anaysisResults.recommendations?.map(
                       (recommendation, index) => (
-                        <motion.li>
-                          {recommendation}
-                        </motion.li>
-                      ))}
+                        <motion.li>{recommendation}</motion.li>
+                      )
+                    )}
                   </ul>
                 </CardContent>
               </Card>
             </div>
           ) : (
             <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Contract Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p >
-                  Upgrade to Premium to view contract detailed analysis, including key clauses and recommendations.
-                </p>
-                <Button className='mt-4' >
-                  Upgrade to Premium
-                </Button>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contract Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>
+                    Upgrade to Premium to view contract detailed analysis,
+                    including key clauses and recommendations.
+                  </p>
+                  <Button className='mt-4'>Upgrade to Premium</Button>
+                </CardContent>
+              </Card>
             </>
           )}
         </TabsContent>
       </Tabs>
-      <Accordion type="single" collapsible className='mb-6'>
-        
+      <Accordion type='single' collapsible className='mb-6'>
+        {renderPremiumAccordion(
+          <>
+            <AccordionItem value='contract-details'>
+              <AccordionTrigger>Content Details</AccordionTrigger>
+              <AccordionContent>
+                <div className='grid md:grid-cols-2 gap-6'>
+                  <div>
+                    <div>
+                      <h3 className='font-semibold mb-2'>
+                        Duration and Termination
+                      </h3>
+                      <p>{/* {anaysisResults.contractDuration} */}</p>
+                      <strong>Termination conditions</strong>
+                      {/* <p>{anaysisResults.terminationConditions}</p> */}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className='font-semibold mb-2'>Legal information</h3>
+                    <p>
+                      <strong>Legal Compliance</strong>
+                      {anaysisResults.legalCompliance}
+                    </p>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </>
+        )}
       </Accordion>
     </div>
   );
