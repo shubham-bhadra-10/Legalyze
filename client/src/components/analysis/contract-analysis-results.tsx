@@ -86,45 +86,48 @@ export default function ContractAnalysisResults({
       impact: 'low',
     };
     return (
-      <ul>
-        {displayItems.map((item, index) => (
-          <motion.li key={index}>
-            <div className='flex justify-between items-start mb-2'>
-              <span className='font-semibold text-lg'>
-                {type === 'risk' ? item.risk : item.opportunity}
-              </span>
-              {(item.severity || item.impact) && (
-                <Badge
-                  className={
-                    type === 'risk'
-                      ? getSeverityColor(item.severity || 'low')
-                      : getImpactColor(item.impact || 'low')
-                  }
-                >
-                  {(item.severity || item.impact)?.toUpperCase()}
-                </Badge>
-              )}
-            </div>
-            <p>{type === 'risk' ? item.explanation : item.explanation}</p>
-          </motion.li>
-        ))}
-        {!isActive && items.length > 3 && (
-          <motion.li className='border rounded-lg p-4 blur-sm'>
-            <div className='flex justify-between items-start mb-2'>
-              <span className='font-semibold text-lg'>
-                {type === 'risk' ? fakeItems.risk : fakeItems.opportunity}
-              </span>
-              <Badge>
-                {(
-                  fakeItems.severity ||
-                  fakeItems.impact ||
-                  'low'
-                ).toUpperCase()}
-              </Badge>
-            </div>
-          </motion.li>
+      <ul className="space-y-4">
+  {displayItems.map((item, index) => (
+    <motion.li
+      key={index}
+      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-lg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="flex justify-between items-start mb-3">
+        <span className="font-semibold text-lg text-gray-800">
+          {type === "risk" ? item.risk : item.opportunity}
+        </span>
+        {(item.severity || item.impact) && (
+          <Badge
+            className={`text-xs px-2 py-1 rounded-full ${
+              type === "risk"
+                ? getSeverityColor(item.severity || "low")
+                : getImpactColor(item.impact || "low")
+            }`}
+          >
+            {(item.severity || item.impact)?.toUpperCase()}
+          </Badge>
         )}
-      </ul>
+      </div>
+      <p className="text-sm text-gray-600">{item.explanation}</p>
+    </motion.li>
+  ))}
+
+  {!isActive && items.length > 3 && (
+    <motion.li className="rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-inner blur-sm">
+      <div className="flex justify-between items-start mb-3">
+        <span className="font-semibold text-lg text-gray-500">
+          {type === "risk" ? fakeItems.risk : fakeItems.opportunity}
+        </span>
+        <Badge className="text-xs px-2 py-1 rounded-full bg-gray-300 text-gray-700">
+          {(fakeItems.severity || fakeItems.impact || "low").toUpperCase()}
+        </Badge>
+      </div>
+    </motion.li>
+  )}
+</ul>
+
     );
   };
 
