@@ -10,10 +10,12 @@ import {
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import OverallScoreChart from './chart';
 import { Tabs } from '../ui/tabs';
-import { TabsList, TabsTrigger } from '@radix-ui/react-tabs';
+import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
+import { motion } from 'framer-motion';
 
 interface IContractAnalysisResultsProps {
   anaysisResults: ContractAnalysis;
+  isActive: boolean;
   contractId: string;
 }
 
@@ -21,6 +23,7 @@ interface IContractAnalysisResultsProps {
 
 export default function ContractAnalysisResults({
   anaysisResults,
+  isActive,
   contractId,
 }: IContractAnalysisResultsProps) {
   const [activeTab, setActiveTab] = useState('summary');
@@ -36,6 +39,44 @@ export default function ContractAnalysisResults({
   };
 
   const scoreTrend = getScore();
+
+  const getSeverityCard = () => {
+    
+  }
+
+  const renderRisksandOpportunities = (
+    items: Array<{
+      risk?: string;
+      opportunity?: string;
+      explanation?: string;
+      severity?: string;
+      impact?: string;
+    }>,
+    type: 'risk' | 'opportunity'
+  ) => {
+    const displayItems = isActive ? items : items.slice(0, 3);
+    const fakeItems = {
+      risk: type === 'risk' ? 'Hidden Risk' : undefined,
+      opportunity: type === 'opportunity' ? 'Hidden Opportunity' : undefined,
+      explanation: 'Hidden explanation',
+      severity: 'low',
+      impact: 'low',
+    };
+    return (
+      <ul>
+        {displayItems.map((item, index) => (
+          <motion.li key={index}>
+            <div className='flex justify-between items-start mb-2'>
+              <span className='font-semibold text-lg'>
+                {type === 'risk' ? item.risk : item.opportunity}
+              </span>
+
+            </div>
+          </motion.li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -119,6 +160,51 @@ export default function ContractAnalysisResults({
             Details
           </TabsTrigger>
         </TabsList>
+        <TabsContent value='summary'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Contract Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className='text-lg leading-relaxed'>
+                {/* {anaysisResults.summary} */}
+                This is a sample summary of the contract analysis results.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value='risks'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Contract Risks</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {renderRisksandOpportunities(
+                [
+                  {
+                    risk: 'Risk 1',
+                    explanation: 'Explanation of risk 1',
+                    severity: 'High',
+                    impact: 'High',
+                  },
+                  {
+                    risk: 'Risk 2',
+                    explanation: 'Explanation of risk 2',
+                    severity: 'Medium',
+                    impact: 'Medium',
+                  },
+                  {
+                    risk: 'Risk 3',
+                    explanation: 'Explanation of risk 3',
+                    severity: 'Low',
+                    impact: 'Low',
+                  },
+                ],
+                'risk'
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
