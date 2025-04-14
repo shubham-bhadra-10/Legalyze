@@ -12,6 +12,7 @@ import OverallScoreChart from './chart';
 import { Tabs } from '../ui/tabs';
 import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
 
 interface IContractAnalysisResultsProps {
   anaysisResults: ContractAnalysis;
@@ -40,9 +41,31 @@ export default function ContractAnalysisResults({
 
   const scoreTrend = getScore();
 
-  const getSeverityCard = () => {
-    
-  }
+  const getSeverityColor = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return '';
+    }
+  };
+
+  const getImpactColor = (impact: string) => {
+    switch (impact.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return '';
+    }
+  };
 
   const renderRisksandOpportunities = (
     items: Array<{
@@ -70,8 +93,19 @@ export default function ContractAnalysisResults({
               <span className='font-semibold text-lg'>
                 {type === 'risk' ? item.risk : item.opportunity}
               </span>
-
+              {(item.severity || item.impact) && (
+                <Badge
+                  className={
+                    type === 'risk'
+                      ? getSeverityColor(item.severity || 'low')
+                      : getImpactColor(item.impact || 'low')
+                  }
+                >
+                  {(item.severity || item.impact)?.toUpperCase()}
+                </Badge>
+              )}
             </div>
+            <p>{type === 'risk' ? item.explanation : item.explanation}</p>
           </motion.li>
         ))}
       </ul>
