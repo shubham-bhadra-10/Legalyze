@@ -13,6 +13,8 @@ import { Tabs } from '../ui/tabs';
 import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '../ui/button';
+import { Accordion } from '@radix-ui/react-accordion';
 
 interface IContractAnalysisResultsProps {
   anaysisResults: ContractAnalysis;
@@ -86,48 +88,51 @@ export default function ContractAnalysisResults({
       impact: 'low',
     };
     return (
-      <ul className="space-y-4">
-  {displayItems.map((item, index) => (
-    <motion.li
-      key={index}
-      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-lg"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <div className="flex justify-between items-start mb-3">
-        <span className="font-semibold text-lg text-gray-800">
-          {type === "risk" ? item.risk : item.opportunity}
-        </span>
-        {(item.severity || item.impact) && (
-          <Badge
-            className={`text-xs px-2 py-1 rounded-full ${
-              type === "risk"
-                ? getSeverityColor(item.severity || "low")
-                : getImpactColor(item.impact || "low")
-            }`}
+      <ul className='space-y-4'>
+        {displayItems.map((item, index) => (
+          <motion.li
+            key={index}
+            className='rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-lg'
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            {(item.severity || item.impact)?.toUpperCase()}
-          </Badge>
+            <div className='flex justify-between items-start mb-3'>
+              <span className='font-semibold text-lg text-gray-800'>
+                {type === 'risk' ? item.risk : item.opportunity}
+              </span>
+              {(item.severity || item.impact) && (
+                <Badge
+                  className={`text-xs px-2 py-1 rounded-full ${
+                    type === 'risk'
+                      ? getSeverityColor(item.severity || 'low')
+                      : getImpactColor(item.impact || 'low')
+                  }`}
+                >
+                  {(item.severity || item.impact)?.toUpperCase()}
+                </Badge>
+              )}
+            </div>
+            <p className='text-sm text-gray-600'>{item.explanation}</p>
+          </motion.li>
+        ))}
+
+        {!isActive && items.length > 3 && (
+          <motion.li className='rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-inner blur-sm'>
+            <div className='flex justify-between items-start mb-3'>
+              <span className='font-semibold text-lg text-gray-500'>
+                {type === 'risk' ? fakeItems.risk : fakeItems.opportunity}
+              </span>
+              <Badge className='text-xs px-2 py-1 rounded-full bg-gray-300 text-gray-700'>
+                {(
+                  fakeItems.severity ||
+                  fakeItems.impact ||
+                  'low'
+                ).toUpperCase()}
+              </Badge>
+            </div>
+          </motion.li>
         )}
-      </div>
-      <p className="text-sm text-gray-600">{item.explanation}</p>
-    </motion.li>
-  ))}
-
-  {!isActive && items.length > 3 && (
-    <motion.li className="rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-inner blur-sm">
-      <div className="flex justify-between items-start mb-3">
-        <span className="font-semibold text-lg text-gray-500">
-          {type === "risk" ? fakeItems.risk : fakeItems.opportunity}
-        </span>
-        <Badge className="text-xs px-2 py-1 rounded-full bg-gray-300 text-gray-700">
-          {(fakeItems.severity || fakeItems.impact || "low").toUpperCase()}
-        </Badge>
-      </div>
-    </motion.li>
-  )}
-</ul>
-
+      </ul>
     );
   };
 
@@ -261,10 +266,115 @@ export default function ContractAnalysisResults({
                 ],
                 'risk'
               )}
+              {!isActive && (
+                <p className='mt-4 text-center text-sm text-gray-500'>
+                  Upgrade to Premium to view all risks
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value='opportunities'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Opportunities</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {renderRisksandOpportunities(
+                [
+                  {
+                    risk: 'Risk 1',
+                    explanation: 'Explanation of risk 1',
+                    severity: 'High',
+                    impact: 'High',
+                  },
+                  {
+                    risk: 'Risk 2',
+                    explanation: 'Explanation of risk 2',
+                    severity: 'Medium',
+                    impact: 'Medium',
+                  },
+                  {
+                    risk: 'Risk 3',
+                    explanation: 'Explanation of risk 3',
+                    severity: 'Low',
+                    impact: 'Low',
+                  },
+                  {
+                    risk: 'Risk 4',
+                    explanation: 'Explanation of risk 4',
+                    severity: 'High',
+                    impact: 'High',
+                  },
+                ],
+                'opportunity'
+              )}
+              {!isActive && (
+                <p className='mt-4 text-center text-sm text-gray-500'>
+                  Upgrade to Premium to view all opportunities
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value='details'>
+          {isActive ? (
+            <div className='grid md:grid-cols-2 gap-6'>
+              <Card>
+                <CardHeader>Contract Details</CardHeader>
+                <CardContent>
+                  <ul className='space-y-2'>
+                    {
+                      anaysisResults.keyClauses?.map((keyClause, index) => (
+                        <motion.li
+                          key={index}
+                          className='flex items-center'
+                        >
+                          {keyClause}
+                        </motion.li>
+                      ))
+                    }
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recommendations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className='space-y-2'>
+                    {anaysisResults.recommendations?.map(
+                      (recommendation, index) => (
+                        <motion.li>
+                          {recommendation}
+                        </motion.li>
+                      ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Contract Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p >
+                  Upgrade to Premium to view contract detailed analysis, including key clauses and recommendations.
+                </p>
+                <Button className='mt-4' >
+                  Upgrade to Premium
+                </Button>
+              </CardContent>
+            </Card>
+            </>
+          )}
+        </TabsContent>
       </Tabs>
+      <Accordion type="single" collapsible className='mb-6'>
+        
+      </Accordion>
     </div>
   );
 }
