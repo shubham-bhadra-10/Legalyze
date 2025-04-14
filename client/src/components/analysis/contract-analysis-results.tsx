@@ -108,6 +108,22 @@ export default function ContractAnalysisResults({
             <p>{type === 'risk' ? item.explanation : item.explanation}</p>
           </motion.li>
         ))}
+        {!isActive && items.length > 3 && (
+          <motion.li className='border rounded-lg p-4 blur-sm'>
+            <div className='flex justify-between items-start mb-2'>
+              <span className='font-semibold text-lg'>
+                {type === 'risk' ? fakeItems.risk : fakeItems.opportunity}
+              </span>
+              <Badge>
+                {(
+                  fakeItems.severity ||
+                  fakeItems.impact ||
+                  'low'
+                ).toUpperCase()}
+              </Badge>
+            </div>
+          </motion.li>
+        )}
       </ul>
     );
   };
@@ -232,6 +248,12 @@ export default function ContractAnalysisResults({
                     explanation: 'Explanation of risk 3',
                     severity: 'Low',
                     impact: 'Low',
+                  },
+                  {
+                    risk: 'Risk 4',
+                    explanation: 'Explanation of risk 4',
+                    severity: 'High',
+                    impact: 'High',
                   },
                 ],
                 'risk'
