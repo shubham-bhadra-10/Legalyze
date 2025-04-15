@@ -32,6 +32,11 @@ export default function ContractAnalysisResults({
 }: IContractAnalysisResultsProps) {
   const [activeTab, setActiveTab] = useState('summary');
 
+  if (!anaysisResults) {
+    return <div>No results</div>;
+  }
+
+
   const getScore = () => {
     const score = 74;
 
@@ -171,7 +176,9 @@ export default function ContractAnalysisResults({
             {/* LEFT SECTION */}
             <div className='space-y-4'>
               <div className='flex items-center space-x-4'>
-                <div className='text-5xl font-bold text-gray-800'>79</div>
+                <div className='text-5xl font-bold text-gray-800'>
+                  {anaysisResults.overallScore ?? 0}
+                </div>
                 <div
                   className={`flex items-center space-x-2 ${scoreTrend.color}`}
                 >
@@ -185,11 +192,11 @@ export default function ContractAnalysisResults({
               <div className='space-y-2'>
                 <div className='flex justify-between text-sm text-gray-700'>
                   <span>Risk</span>
-                  <span>34%</span>
+                  <span>{100-anaysisResults.overallScore}%</span>
                 </div>
                 <div className='flex justify-between text-sm text-gray-700'>
                   <span>Opportunities</span>
-                  <span>34%</span>
+                  <span>{anaysisResults.overallScore}%</span>
                 </div>
               </div>
 
@@ -341,9 +348,9 @@ export default function ContractAnalysisResults({
                       <h3 className='font-semibold mb-2'>
                         Duration and Termination
                       </h3>
-                      <p>{/* {anaysisResults.contractDuration} */}</p>
+                      <p>{anaysisResults.contractDuration}</p>
                       <strong>Termination conditions</strong>
-                      {/* <p>{anaysisResults.terminationConditions}</p> */}
+                      <p>{anaysisResults.terminationConditions}</p>
                     </div>
                   </div>
                   <div>
