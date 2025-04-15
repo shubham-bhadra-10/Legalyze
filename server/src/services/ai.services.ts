@@ -1,9 +1,9 @@
 import redis from '../controllers/redis';
 import { getDocument } from 'pdfjs-dist';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { model } from 'mongoose';
+import { r } from '@upstash/redis/zmscore-hRk-rDLY';
 
-const AI_MODEL = 'gemini-pro';
+const AI_MODEL = 'gemini-1.5-pro-latest';
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY!);
 const aiModel = genAI.getGenerativeModel({ model: AI_MODEL });
 
@@ -100,7 +100,90 @@ specificClauses: "Summary of clauses specific to the contract type"
  `;
   const results = await aiModel.generateContent(prompt);
   const response = results.response;
-  return response.text();
+  // return response.text();
+
+  let text = response.text();
+  console.log('AI Response:', text);
+
+  text = text.replace(/```json\n?|\n?|n?```/g, '').trim();
+  try {
+    text = text.trim().replace(/^```json\s*|```$/g, '');
+
+    // Remove invalid trailing commas
+    text = text.replace(/,\s*([}\]])/g, '$1');
+
+    // Attempt to parse as-is
+    const analysis = JSON.parse(text);
+    return analysis;
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+  }
+  interface IRisk {
+    risk: string;
+    explanation: string;
+  }
+
+  interface IOpportunity {
+    opportunity: string;
+    explanation: string;
+  }
+
+  interface FallbackAnalysis {
+    risks: IRisk[];
+    opportunities: IOpportunity[];
+    summary: string;
+  }
+
+  const fallbackAnalysis: FallbackAnalysis = {
+    risks: [],
+    opportunities: [],
+    summary: 'No summary provided',
+  };
+
+  //Extract risks
+  const risksMatch = text.match(/"risks"\s*:\s*\[([\s\S]*?)\]/);
+  if (risksMatch) {
+    fallbackAnalysis.risks = risksMatch[1].split('},').map((risk) => {
+      const riskMatch = risk.match(/risk'\s*:\s*"([^"]*)"/);
+      const explanationMatch = risk.match(/explanation'\s*:\s*"([^"]*)"/);
+      return {
+        risk: riskMatch ? riskMatch[1] : 'Unknown risk',
+        explanation: explanationMatch
+          ? explanationMatch[1]
+          : 'No explanation provided',
+        // severity: 'low', // Default severity
+      };
+    });
+  }
+  //Extract opportunities
+  const opportunitiesMatch = text.match(/"opportunities"\s*:\s*\[([\s\S]*?)\]/);
+  if (opportunitiesMatch) {
+    fallbackAnalysis.opportunities = opportunitiesMatch[1]
+      .split('},')
+      .map((opportunity) => {
+        const opportunityMatch = opportunity.match(
+          /opportunity'\s*:\s*"([^"]*)"/
+        );
+        const explanationMatch = opportunity.match(
+          /'explanation'\s*:\s*"([^"]*)"/
+        );
+        return {
+          opportunity: opportunityMatch
+            ? opportunityMatch[1]
+            : 'Unknown opportunity',
+          explanation: explanationMatch
+            ? explanationMatch[1]
+            : 'No explanation provided',
+          // impact: 'low', // Default impact
+        };
+      });
+  }
+  //Extract summary
+  const summaryMatch = text.match(/"summary"\s*:\s*"([^"]*)"/);
+  if (summaryMatch) {
+    fallbackAnalysis.summary = summaryMatch[1];
+  }
+  return fallbackAnalysis;
 };
 
 // Ensure that all text in the JSON object is in same language as the orginal contract (${language}).

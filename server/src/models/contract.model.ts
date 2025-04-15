@@ -1,7 +1,5 @@
-import { ai, I } from '@upstash/redis/zmscore-hRk-rDLY';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import { IUser } from './user.model';
-import mongoose, { mongo, Schema } from 'mongoose';
-import { use } from 'passport';
 
 interface IRisk {
   risk: string;
@@ -23,12 +21,12 @@ interface ICompensationStructure {
 }
 
 export interface IContractAnalysis extends Document {
-  userId: IUser['_id'];
+  userId: Types.ObjectId | IUser['_id'];
   contractText: string;
   risks: IRisk[];
   opportunities: IOpportunity[];
   summary: string;
-  reccommendations: string[];
+  recommendations: string[];
   keyClauses: string[];
   legalCompliance: string;
   negotiationPoints: string[];
@@ -44,9 +42,7 @@ export interface IContractAnalysis extends Document {
     rating: number;
     comments: string;
   };
-  customFields: {
-    [key: string]: string;
-  };
+  customFields: Map<string, string>;
   expirationDate: Date;
   language: string;
   aiModel: string;
@@ -55,24 +51,29 @@ export interface IContractAnalysis extends Document {
     description: string;
     details: string[];
   };
-  // projectId: IProject["_id"];
+  projectId?: Types.ObjectId;
 }
+
 const ContractAnalysisSchema: Schema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   contractText: { type: String, required: true },
+
   risks: [
     {
-      risk: {
-        type: String,
-        explanation: String,
-        required: true,
-        severity: String,
-      },
+      risk: { type: String, required: true },
+      explanation: { type: String },
+      severity: { type: String, enum: ['low', 'medium', 'high'] },
     },
   ],
-  oppportunities: [
-    { opportunity: String, explanation: String, impact: String },
+
+  opportunities: [
+    {
+      opportunity: { type: String },
+      explanation: { type: String },
+      impact: { type: String, enum: ['low', 'medium', 'high'] },
+    },
   ],
+
   summary: { type: String, required: true },
   recommendations: [{ type: String }],
   keyClauses: [{ type: String }],
@@ -81,13 +82,16 @@ const ContractAnalysisSchema: Schema = new Schema({
   contractDuration: { type: String },
   terminationConditions: { type: String },
   overallScore: { type: Number, min: 0, max: 100 },
+
   compensationStructure: {
     baseSalary: { type: String },
     bonuses: { type: String },
     equity: { type: String },
     otherBenefits: { type: String },
   },
+
   performanceMetrics: [{ type: String }],
+
   intellectualPropertyClauses: {
     type: Schema.Types.Mixed,
     validate: {
@@ -101,22 +105,28 @@ const ContractAnalysisSchema: Schema = new Schema({
         `${props.value} is not a valid value for intellectualPropertyClauses. It should be a string or an array of strings.`,
     },
   },
+
   createdAt: { type: Date, default: Date.now },
   version: { type: Number, default: 1 },
+
   userFeedback: {
     rating: { type: Number, min: 1, max: 5 },
     comments: { type: String },
   },
+
   customFields: { type: Map, of: String },
-  expirationDate: { type: Date, required: false },
+
+  expirationDate: { type: Date },
   language: { type: String, default: 'en' },
   aiModel: { type: String, default: 'gemini-pro' },
   contractType: { type: String, required: true },
+
   financialTerms: {
     description: { type: String },
     details: [{ type: String }],
   },
-  // projectId : {type:Schema.Types.ObjectId, ref: 'Project', required: true},
+
+  projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
 });
 
 export default mongoose.model<IContractAnalysis>(

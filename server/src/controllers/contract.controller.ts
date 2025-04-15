@@ -2,18 +2,16 @@ import multer from 'multer';
 import { Request, Response } from 'express';
 
 import { IUser } from '../models/user.model';
-import '../types/express'; // Import the extended Request type for user property
+// Import the extended Request type for user property
 import redis from './redis';
 import {
   analyzeContractWithAI,
   detectContractType,
   extractTextFromPdf,
 } from '../services/ai.services';
-import { aw } from '@upstash/redis/zmscore-hRk-rDLY';
 import ContractAnalysisSchema, {
   IContractAnalysis,
 } from '../models/contract.model';
-import { Part } from '@google/generative-ai';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -70,11 +68,12 @@ export const analyzeContract = async (req: Request, res: Response) => {
     let analysis;
 
     analysis = await analyzeContractWithAI(pdfText, contractType);
+    console.log(analysis);
 
     // @ts-ignore
-    if (!analysis.summary || !analysis.risks || !analysis.opportunities) {
-      throw new Error('Analysis failed. Please try again.');
-    }
+    // if (!analysis.summary || !analysis.risks || !analysis.opportunities) {
+    //   throw new Error('Analysis failed. Please try again.');
+    // }
     const savedAnalysis = await ContractAnalysisSchema.create({
       userId: user._id,
       contractText: pdfText,

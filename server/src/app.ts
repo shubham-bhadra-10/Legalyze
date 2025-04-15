@@ -71,7 +71,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', authRoute);
-app.use('/contracts', authRoute);
+app.use('/contracts', contractRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
