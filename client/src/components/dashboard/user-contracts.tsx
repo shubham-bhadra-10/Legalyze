@@ -24,6 +24,7 @@ import {
   TableRow,
 } from '../ui/table';
 import { ArrowUpDown, FileText, AlertTriangle, PieChart } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function UserContracts() {
   const { data: contracts } = useQuery<ContractAnalysis[]>({
@@ -32,6 +33,20 @@ export default function UserContracts() {
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+  const contractTypesColors : {[key:string]:string} = {
+    "Employment": "bg-blue-100 text-blue-900",
+    "Service": "bg-green-100 text-green-800",
+    "Professional Services Agreement": "bg-red-100 text-green-800",
+    "Sales": "bg-yellow-100 text-yellow-800",
+    "Lease": "bg-purple-100 text-purple-800",
+    "Loan": "bg-red-100 text-red-800",
+    "Rental": "bg-orange-100 text-orange-800",
+    "Partnership": "bg-teal-100 text-teal-800",
+    "Non-Disclosure": "bg-pink-100 text-pink-800",
+    "Non-Compete": "bg-gray-100 text-gray-800",
+    "Other" : "bg-indigo-100 text-indigo-800",
+  }
 
   const columns: ColumnDef<ContractAnalysis>[] = [
     {
@@ -83,6 +98,30 @@ export default function UserContracts() {
         );
       },
     },
+    {
+        accessorKey: 'contractType',
+        header: ({ column }) => {
+          return (
+            <Button
+              variant='ghost'
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              className='hover:bg-gray-100 font-medium'
+            >
+              Contract Type
+              <ArrowUpDown className='ml-2 h-4 w-4' />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const contractType = row.getValue<string>('contractType') as string;
+          const colorClass = contractTypesColors[contractType] || contractTypesColors["Other"];
+          return <Badge className={cn("rounded-md",colorClass)}>
+            {contractType}
+          </Badge>
+          
+        },
+      },
+    
   ];
 
   const table = useReactTable({
