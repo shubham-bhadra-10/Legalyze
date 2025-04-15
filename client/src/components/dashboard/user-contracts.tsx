@@ -39,6 +39,12 @@ export default function UserContracts() {
   ];
 
   const totalContracts = contracts?.length || 0;
+  const averageScore = totalContracts > 0 
+  ? (contracts?.reduce((sum, contract) => sum + (contract.overallScore ?? 0), 0) ?? 0) / totalContracts : 0 ;
+
+  const highRiskContracts = contracts?.filter((contract)=>contract.risks.some((risk)=>risk.severity==="high")).length ?? 0;
+  
+
 
   return (
     <div className='container mx-auto p-6 space-y-8'>
@@ -57,7 +63,28 @@ export default function UserContracts() {
             <div className='text-2xl font-bold '>{totalContracts}</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              Average Score
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold '>{averageScore.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>
+              High Risk Contracts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold '>{highRiskContracts}</div>
+          </CardContent>
+        </Card>
       </div>
+      
     </div>
   );
 }
