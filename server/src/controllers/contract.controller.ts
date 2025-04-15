@@ -13,7 +13,7 @@ import ContractAnalysisSchema, {
   IContractAnalysis,
 } from '../models/contract.model';
 import { Filter, ObjectId } from 'mongodb';
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery, mongo } from 'mongoose';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -97,12 +97,13 @@ export const analyzeContract = async (req: Request, res: Response) => {
 export const getUserContracts = async (req: Request, res: Response) => {
   const user = req.user as IUser;
   try {
-    interface QueryType{
-      userId: ObjectId;
-
+    interface QueryType {
+      userId: mongoose.Types.ObjectId;
     }
-    const query: QueryType ={userId: user._id as ObjectId}
-    const contracts = await ContractAnalysisSchema.find(query as FilterQuery<IContractAnalysis>).sort({ createdAt: -1 });
+    const query: QueryType = { userId: user._id as mongoose.Types.ObjectId };
+    const contracts = await ContractAnalysisSchema.find(
+      query as FilterQuery<IContractAnalysis>
+    ).sort({ createdAt: -1 });
     return res.json(contracts);
   } catch (error) {
     return res.status(500).json({
@@ -110,4 +111,4 @@ export const getUserContracts = async (req: Request, res: Response) => {
       error: (error as Error).message,
     });
   }
-}
+};
