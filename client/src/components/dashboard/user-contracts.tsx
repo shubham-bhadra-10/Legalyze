@@ -169,7 +169,7 @@ export default function UserContracts() {
             >
               <DropdownMenuItem className='px-3 py-2 text-sm rounded-md hover:bg-blue-50 cursor-pointer'>
                 <Link
-                  href={`/dashboard/contracts/${contract._id}`}
+                  href={`/dashboard/contract/${contract._id}`}
                   className='w-full text-gray-700 flex items-center'
                 >
                   <Eye className='mr-2 h-4 w-4' />
