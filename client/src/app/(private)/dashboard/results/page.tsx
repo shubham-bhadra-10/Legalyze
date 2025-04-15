@@ -6,7 +6,7 @@ export default function ContractResultsPage() {
   const analysisResults = useContractStore((state) => state.analysisResults);
   return (
     <ContractAnalysisResults
-      contractId={'test'}
+      contractId={analysisResults._id}
       isActive={false}
       anaysisResults={analysisResults}
     />
