@@ -23,8 +23,35 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import { ArrowUpDown, FileText, AlertTriangle, PieChart } from 'lucide-react';
+import {
+  ArrowUpDown,
+  FileText,
+  AlertTriangle,
+  PieChart,
+  MoreHorizontal,
+  Trash,
+  Eye,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@radix-ui/react-dropdown-menu';
+import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
 
 export default function UserContracts() {
   const { data: contracts } = useQuery<ContractAnalysis[]>({
@@ -34,19 +61,19 @@ export default function UserContracts() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const contractTypesColors : {[key:string]:string} = {
-    "Employment": "bg-blue-100 text-blue-900",
-    "Service": "bg-green-100 text-green-800",
-    "Professional Services Agreement": "bg-red-100 text-green-800",
-    "Sales": "bg-yellow-100 text-yellow-800",
-    "Lease": "bg-purple-100 text-purple-800",
-    "Loan": "bg-red-100 text-red-800",
-    "Rental": "bg-orange-100 text-orange-800",
-    "Partnership": "bg-teal-100 text-teal-800",
-    "Non-Disclosure": "bg-pink-100 text-pink-800",
-    "Non-Compete": "bg-gray-100 text-gray-800",
-    "Other" : "bg-indigo-100 text-indigo-800",
-  }
+  const contractTypesColors: { [key: string]: string } = {
+    Employment: 'bg-blue-100 text-blue-900',
+    Service: 'bg-green-100 text-green-800',
+    'Professional Services Agreement': 'bg-red-100 text-green-800',
+    Sales: 'bg-yellow-100 text-yellow-800',
+    Lease: 'bg-purple-100 text-purple-800',
+    Loan: 'bg-red-100 text-red-800',
+    Rental: 'bg-orange-100 text-orange-800',
+    Partnership: 'bg-teal-100 text-teal-800',
+    'Non-Disclosure': 'bg-pink-100 text-pink-800',
+    'Non-Compete': 'bg-gray-100 text-gray-800',
+    Other: 'bg-indigo-100 text-indigo-800',
+  };
 
   const columns: ColumnDef<ContractAnalysis>[] = [
     {
@@ -99,29 +126,96 @@ export default function UserContracts() {
       },
     },
     {
-        accessorKey: 'contractType',
-        header: ({ column }) => {
-          return (
-            <Button
-              variant='ghost'
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-              className='hover:bg-gray-100 font-medium'
-            >
-              Contract Type
-              <ArrowUpDown className='ml-2 h-4 w-4' />
-            </Button>
-          );
-        },
-        cell: ({ row }) => {
-          const contractType = row.getValue<string>('contractType') as string;
-          const colorClass = contractTypesColors[contractType] || contractTypesColors["Other"];
-          return <Badge className={cn("rounded-md",colorClass)}>
-            {contractType}
-          </Badge>
-          
-        },
+      accessorKey: 'contractType',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className='hover:bg-gray-100 font-medium'
+          >
+            Contract Type
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        );
       },
-    
+      cell: ({ row }) => {
+        const contractType = row.getValue<string>('contractType') as string;
+        const colorClass =
+          contractTypesColors[contractType] || contractTypesColors['Other'];
+        return (
+          <Badge className={cn('rounded-md', colorClass)}>{contractType}</Badge>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        const contract = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='ghost'
+                className='size-8 p-0 rounded-full hover:bg-gray-100 transition-colors'
+              >
+                <span className='sr-only'>Open Menu</span>
+                <MoreHorizontal className='size-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align='end'
+              className='w-48 p-1 bg-white shadow-md border border-gray-200'
+            >
+              <DropdownMenuItem className='px-3 py-2 text-sm rounded-md hover:bg-blue-50 cursor-pointer'>
+                <Link
+                  href={`/dashboard/contracts/${contract._id}`}
+                  className='w-full text-gray-700 flex items-center'
+                >
+                  <Eye className='mr-2 h-4 w-4' />
+                  View Details
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className='h-px my-1 bg-gray-200' />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                    }}
+                    className='px-3 py-2 text-sm rounded-md hover:bg-red-50 cursor-pointer'
+                  >
+                    <span className='text-red-600 flex items-center'>
+                      <Trash className='mr-2 h-4 w-4' />
+                      Delete Contract
+                    </span>
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent className='max-w-md rounded-lg border border-gray-200 p-6 shadow-lg bg-white'>
+                  <AlertDialogHeader className='space-y-2'>
+                    <AlertDialogTitle className='text-xl font-semibold text-gray-900'>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className='text-sm text-gray-600 leading-relaxed'>
+                      This action cannot be undone. This will permanently delete
+                      your contract and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className='mt-6 flex gap-3 justify-end'>
+                    <AlertDialogCancel className='rounded-md px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-colors'>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction className='rounded-md px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors'>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   const table = useReactTable({
