@@ -2,11 +2,28 @@ import { ContractAnalysis } from '@/interfaces/contract.interface';
 import { api } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { ColumnDef, SortingState } from '@tanstack/react-table'; // Ensure this is the correct library for SortingState
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table'; // Ensure this is the correct library for SortingState
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import UploadModel from '@/components/models/upload-model';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import { get } from 'http';
 
 export default function UserContracts() {
   const { data: contracts } = useQuery<ContractAnalysis[]>({
@@ -38,13 +55,31 @@ export default function UserContracts() {
     },
   ];
 
+  const table = useReactTable({
+    data: contracts || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+  });
+
   const totalContracts = contracts?.length || 0;
-  const averageScore = totalContracts > 0 
-  ? (contracts?.reduce((sum, contract) => sum + (contract.overallScore ?? 0), 0) ?? 0) / totalContracts : 0 ;
+  const averageScore =
+    totalContracts > 0
+      ? (contracts?.reduce(
+          (sum, contract) => sum + (contract.overallScore ?? 0),
+          0
+        ) ?? 0) / totalContracts
+      : 0;
 
-  const highRiskContracts = contracts?.filter((contract)=>contract.risks.some((risk)=>risk.severity==="high")).length ?? 0;
-  
-
+  const highRiskContracts =
+    contracts?.filter((contract) =>
+      contract.risks.some((risk) => risk.severity === 'high')
+    ).length ?? 0;
 
   return (
     <div className='container mx-auto p-6 space-y-8'>
@@ -65,9 +100,7 @@ export default function UserContracts() {
         </Card>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
-              Average Score
-            </CardTitle>
+            <CardTitle className='text-sm font-medium'>Average Score</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold '>{averageScore.toFixed(2)}</div>
@@ -84,7 +117,77 @@ export default function UserContracts() {
           </CardContent>
         </Card>
       </div>
-      
+      <div className='rounded-mc border'>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center'
+                >
+                  No contracts found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className='flex items-center justify-end space-x-2 py-4 '>
+        <Button
+          variant={'outline'}
+          size={'sm'}
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant={'outline'}
+          size={'sm'}
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+      <UploadModel
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUploadComplete={() => setIsUploadModalOpen(true)}
+      />
     </div>
   );
 }
@@ -92,12 +195,4 @@ export default function UserContracts() {
 async function fetchUserContracts(): Promise<ContractAnalysis[]> {
   const response = await api.get('/contracts/user-contracts');
   return response.data;
-}
-
-{
-  /* <UploadModel
-isOpen={isUploadModalOpen}
-onClose={() => setIsUploadModalOpen(false)}
-onUploadComplete={() => setIsUploadModalOpen(true)}
-/> */
 }
