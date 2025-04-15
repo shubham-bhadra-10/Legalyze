@@ -117,12 +117,7 @@ export default function UserContracts() {
         <h1 className='text-3xl font-bold tracking-tight text-gray-900'>
           Your Contracts
         </h1>
-        <Button
-          onClick={() => setIsUploadModalOpen(true)}
-          className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200'
-        >
-          New Contract
-        </Button>
+        <Button onClick={() => setIsUploadModalOpen(true)}>New Contract</Button>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
@@ -256,7 +251,7 @@ export default function UserContracts() {
       <UploadModel
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
-        onUploadComplete={() => setIsUploadModalOpen(false)}
+        onUploadComplete={() => setIsUploadModalOpen(true)}
       />
     </div>
   );
