@@ -12,6 +12,8 @@ import {
 import ContractAnalysisSchema, {
   IContractAnalysis,
 } from '../models/contract.model';
+import { Filter, ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -91,3 +93,21 @@ export const analyzeContract = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUserContracts = async (req: Request, res: Response) => {
+  const user = req.user as IUser;
+  try {
+    interface QueryType{
+      userId: ObjectId;
+
+    }
+    const query: QueryType ={userId: user._id as ObjectId}
+    const contracts = await ContractAnalysisSchema.find(query as FilterQuery<IContractAnalysis>).sort({ createdAt: -1 });
+    return res.json(contracts);
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error fetching contracts',
+      error: (error as Error).message,
+    });
+  }
+}
