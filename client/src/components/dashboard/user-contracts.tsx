@@ -250,7 +250,7 @@ export default function UserContracts() {
         <h1 className='text-3xl font-bold tracking-tight text-gray-900'>
           Your Contracts
         </h1>
-        <Button onClick={() => setIsUploadModalOpen(true)}>New Contract</Button>
+        <Button className="bg-[#1a202c] text-white" onClick={() => setIsUploadModalOpen(true)}>New Contract</Button> 
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
