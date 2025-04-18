@@ -159,7 +159,7 @@ export default function ContractAnalysisResults({
           <div className='absolute inset-0 bg-white/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4'>
             <Button
               variant='outline'
-              className='bg-white border-2 border-primary hover:bg-primary/10 transition-colors duration-300 shadow-md px-6 py-2 font-medium'
+              className='border-2 border-primary hover:bg-primary/10 transition-colors duration-300 shadow-md px-6 py-2 font-medium'
             >
               Upgrade to Premium
             </Button>
