@@ -3,11 +3,11 @@ import { isAuthenticated } from '../middleware/auth';
 import {
   analyzeContract,
   detectAndConfirmContractType,
+  getContractById,
   getUserContracts,
   uploadMiddleware,
 } from '../controllers/contract.controller';
 import { handleErrors } from '../middleware/errors';
-import { get } from 'http';
 const router = express.Router();
 
 router.post(
@@ -22,9 +22,8 @@ router.post(
   uploadMiddleware,
   handleErrors(analyzeContract)
 );
-router.get(
-  '/user-contracts',
-  isAuthenticated,
-  handleErrors(getUserContracts)
-);
+router.get('/user-contracts', isAuthenticated, handleErrors(getUserContracts));
+
+router.get('/contract/:id', isAuthenticated, handleErrors(getContractById));
+
 export default router;

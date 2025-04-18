@@ -9,11 +9,12 @@ import {
   detectContractType,
   extractTextFromPdf,
 } from '../services/ai.services';
+import ContractAnalysis from '../models/contract.model';
 import ContractAnalysisSchema, {
   IContractAnalysis,
 } from '../models/contract.model';
-import { Filter, ObjectId } from 'mongodb';
 import mongoose, { FilterQuery, mongo } from 'mongoose';
+import { isValidMongoId } from '../utils/mongoUtils';
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -72,10 +73,7 @@ export const analyzeContract = async (req: Request, res: Response) => {
     analysis = await analyzeContractWithAI(pdfText, contractType);
     console.log(analysis);
 
-    // @ts-ignore
-    // if (!analysis.summary || !analysis.risks || !analysis.opportunities) {
-    //   throw new Error('Analysis failed. Please try again.');
-    // }
+  
     const savedAnalysis = await ContractAnalysisSchema.create({
       userId: user._id,
       contractText: pdfText,
@@ -108,6 +106,49 @@ export const getUserContracts = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error fetching contracts',
+      error: (error as Error).message,
+    });
+  }
+};
+
+export const getContractById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = req.user as IUser;
+  
+
+
+  if (!isValidMongoId(id)) {
+    return res.status(400).json({ message: 'Invalid contract ID' });
+  }
+
+  try {
+    // Check cache
+    const cachedContract = await redis.get(`contract:${id}`);
+    if (cachedContract) {
+      return res.json(cachedContract);
+    }
+
+    // Check database
+    const contract = await ContractAnalysis.findOne({
+      _id: id,
+      userId: user._id,
+    }).lean();
+
+    if (!contract) {
+      console.log('No contract found matching:', { id, userId: user._id });
+      return res.status(404).json({ message: 'Contract not found' });
+    }
+
+    // Cache results
+    await redis.set(`contract:${id}`, JSON.stringify(contract), { 
+      ex: 60 * 60 // 1 hour expiration
+    });
+
+    return res.json(contract);
+  } catch (error) {
+    console.error('Error in getContractById:', error);
+    return res.status(500).json({
+      message: 'Error fetching contract',
       error: (error as Error).message,
     });
   }
