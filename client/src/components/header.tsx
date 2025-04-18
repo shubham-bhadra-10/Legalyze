@@ -20,7 +20,7 @@ export function Header() {
     <header className='sticky top-0 z-50 w-full border-b border-gray-200 bg-white/85 backdrop-blur-md shadow-sm transition-all duration-200'>
       <div className='mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-6'>
         <Link
-          href='/'
+          href='/dashboard'
           className='text-xl font-bold text-gray-900 flex items-center gap-2 hover:opacity-90 transition-opacity'
         >
           {/* Logo SVG */}
