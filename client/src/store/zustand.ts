@@ -25,4 +25,4 @@ const useModalStore = create<ModalState>((set, get) => ({
   isOpen: (key: string) => Boolean(get().modals[key])
 }));
 
-export { useContractStore };
+export { useContractStore, useModalStore };
