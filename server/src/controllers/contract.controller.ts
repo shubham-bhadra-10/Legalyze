@@ -70,10 +70,12 @@ export const analyzeContract = async (req: Request, res: Response) => {
 
     let analysis;
 
-    analysis = await analyzeContractWithAI(pdfText, contractType);
-    console.log(analysis);
+    if (user.isPremium) {
+      analysis = await analyzeContractWithAI(pdfText, 'premium', contractType);
+    } else {
+      analysis = await analyzeContractWithAI(pdfText, 'free', contractType);
+    }
 
-  
     const savedAnalysis = await ContractAnalysisSchema.create({
       userId: user._id,
       contractText: pdfText,
@@ -114,8 +116,6 @@ export const getUserContracts = async (req: Request, res: Response) => {
 export const getContractById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user as IUser;
-  
-
 
   if (!isValidMongoId(id)) {
     return res.status(400).json({ message: 'Invalid contract ID' });
@@ -140,8 +140,8 @@ export const getContractById = async (req: Request, res: Response) => {
     }
 
     // Cache results
-    await redis.set(`contract:${id}`, JSON.stringify(contract), { 
-      ex: 60 * 60 // 1 hour expiration
+    await redis.set(`contract:${id}`, JSON.stringify(contract), {
+      ex: 60 * 60, // 1 hour expiration
     });
 
     return res.json(contract);
