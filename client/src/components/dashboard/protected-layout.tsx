@@ -10,6 +10,7 @@ import {
 } from '../ui/card';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { useModalStore } from '@/store/zustand';
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useCurrentUser();
@@ -33,6 +34,7 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function AuthCard() {
+  const { openModal } = useModalStore();
   return (
     <Card className='w-full max-w-2xl mx-auto mt-10 shadow-xl rounded-xl overflow-hidden border border-gray-100'>
       <div className='flex flex-col sm:flex-row'>
@@ -51,7 +53,10 @@ export default function AuthCard() {
           </CardHeader>
           <CardContent className='px-0 py-4'>
             <div className='flex flex-col sm:flex-row gap-3'>
-              <Button className='flex-1 '>
+              <Button
+                onClick={() => openModal('connectAccountModal')}
+                className='flex-1 '
+              >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   viewBox='0 0 24 24'

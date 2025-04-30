@@ -15,13 +15,14 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Icons } from './icons';
 import { logout } from '@/lib/api';
+import { useModalStore } from '@/store/zustand';
 
-function googleSignIn(): Promise<void> {
-  return new Promise((resolve) => {
-    window.location.href = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL!;
-    resolve();
-  });
-}
+// function googleSignIn(): Promise<void> {
+//   return new Promise((resolve) => {
+//     window.location.href = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL!;
+//     resolve();
+//   });
+// }
 
 export function UserButton() {
   const { user } = useCurrentUser();
@@ -33,6 +34,8 @@ export function UserButton() {
     // router.push('/');
     window.location.reload();
   };
+
+  const { openModal } = useModalStore();
 
   return (
     <div>
@@ -100,7 +103,7 @@ export function UserButton() {
         </DropdownMenu>
       ) : (
         <Button
-          onClick={googleSignIn}
+          onClick={() => openModal('connectAccountModal')}
           className='bg-gray-900 text-white hover:bg-gray-800 rounded-md px-4 py-2 transition duration-200'
         >
           Sign In
