@@ -29,7 +29,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       mode: 'payment',
       success_url: `${process.env.CLIENT_URL}/payment-success`,
       cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
-      client_reference_id: user._id,
+      client_reference_id: user._id.toString(), // Pass the user ID to the session
     });
     res.json({ sessionId: session.id });
   } catch (err) {
