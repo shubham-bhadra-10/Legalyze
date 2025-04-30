@@ -51,7 +51,7 @@ export default function AuthCard() {
           </CardHeader>
           <CardContent className='px-0 py-4'>
             <div className='flex flex-col sm:flex-row gap-3'>
-              <Button className='flex-1 flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'>
+              <Button className='flex-1 '>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   viewBox='0 0 24 24'
