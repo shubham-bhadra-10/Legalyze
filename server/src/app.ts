@@ -12,6 +12,8 @@ import './config/passport';
 //routes
 import authRoute from './routes/auth';
 import contractRoute from './routes/contracts';
+import paymentRoute from './routes/payment';
+import { handleWebhook } from './controllers/payment-controller';
 
 const app = express();
 // console.log(process.env.MONGODB_URI);
@@ -32,7 +34,11 @@ app.use(
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.post(
+  "/payments/webhook",
+  express.raw({ type: "application/json" }),
+  handleWebhook
+)
 // Set up session middleware
 app.use(
   session({
@@ -72,6 +78,7 @@ app.use(passport.session());
 
 app.use('/auth', authRoute);
 app.use('/contracts', contractRoute);
+app.use('/payments',paymentRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

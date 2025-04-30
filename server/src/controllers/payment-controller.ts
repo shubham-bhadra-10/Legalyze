@@ -51,7 +51,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
     );
   } catch (err: any) {
     console.log(err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    return;
   }
 
   if (event.type === 'checkout.session.completed') {
